@@ -1,0 +1,25 @@
+STEPS
+-----
+
+ 1. Render a quad
+    - Create vertices
+    - Create Vertex Array / Vertex Buffer / Element Buffer Objects
+    - Create quad shader
+    - Render!
+
+ 2. Render a voxel (cube)
+    - Create 6 quads offset and rotated from a center point 
+    - Apply texture from atlas
+        - Voxel faces have id that corresponds to offset in atlas
+    - Render!
+
+ 3. Create a 'chunk' of voxels
+    - Define chunk size and fill in with voxels 
+    - Do not render hidden faces (for each voxel check if faces are open air)
+    - Render
+    - Load and unload chunks as player moves
+
+ 4. Implement basic collision physics
+    - Player should be able to stand on ground and not walk through walls
+
+ 5. World gen
