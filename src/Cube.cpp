@@ -7,7 +7,8 @@ static unsigned int CUBE_VAO;
 
 static const float CUBE_VERTICES[] = 
 {
-     0.5,  0.5, -0.5, // texture coordinates
+    // vertex coords, // texture coords
+     0.5,  0.5, -0.5,
     -0.5,  0.5, -0.5,
     -0.5,  0.5,  0.5,
      0.5,  0.5,  0.5, 
@@ -56,7 +57,7 @@ Cube::~Cube()
 
 void Cube::draw(const Shader shader) const
 {
-    std::cout << "Drawing\n";
+    // std::cout << "Drawing\n";
     glBindVertexArray(CUBE_VAO);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }

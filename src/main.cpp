@@ -11,6 +11,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Cube.h"
+#include "Chunk.h"
 
 GLFWwindow* initialize_and_create_window(unsigned int width, unsigned int height, const char* title);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -37,136 +38,122 @@ int main()
         return -1;
     }
 
-    // triangle
-    // float vertices[] = {
-    //     -0.5f, -0.5f, 0.0f,
-    //      0.5f, -0.5f, 0.0f,
-    //      0.0f,  0.5f, 0.0f
-    // };
+    // // texture
+    // unsigned int texture;
+    // glGenTextures(1, &texture);
+    // glBindTexture(GL_TEXTURE_2D, texture);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // int width, height, nr_channels;
+    // stbi_set_flip_vertically_on_load(true);
+    // unsigned char* data = stbi_load(RESOURCES_PATH "textures/container.jpg", &width, &height, &nr_channels, 0);
+    // if (data) {
+    //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    //     glGenerateMipmap(GL_TEXTURE_2D);
+    // } else {
+    //     std::cerr << "ERROR::TEXTURE::LOAD_FAILURE\n";
+    // }
+    // stbi_image_free(data);
 
-    // unsigned int VBO;
-    // unsigned int VAO;
+    // float vertices[] = {
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    //     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    //     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    //     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    //     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    //     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+    //     -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+    //     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    //     -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    //     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    //     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    //     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    //     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    //     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+    //     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    //     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+    //     -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    //     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+    //     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    //     -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+    //     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    // };
+    // glm::vec3 cubePositions[] = {
+    //     glm::vec3(0.0f, 0.0f, 0.0f),
+    //     glm::vec3(2.0f, 5.0f, -15.0f),
+    //     glm::vec3(-1.5f, -2.2f, -2.5f),
+    //     glm::vec3(-3.8f, -2.0f, -12.3f),
+    //     glm::vec3(2.4f, -0.4f, -3.5f),
+    //     glm::vec3(-1.7f, 3.0f, -7.5f),
+    //     glm::vec3(1.3f, -2.0f, -2.5f),
+    //     glm::vec3(1.5f, 2.0f, -2.5f),
+    //     glm::vec3(1.5f, 0.2f, -1.5f),
+    //     glm::vec3(-1.3f, 1.0f, -1.5f)
+    // };
+    // unsigned int VBO, VAO;
     // glGenVertexArrays(1, &VAO);
-    // glBindVertexArray(VAO);
     // glGenBuffers(1, &VBO);
+    // // glGenBuffers(1, &EBO);
+    // // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+    // glBindVertexArray(VAO);
+
     // glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    // // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // // position attribute
+    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     // glEnableVertexAttribArray(0);
-
-    // texture
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    int width, height, nr_channels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load(RESOURCES_PATH "textures/container.jpg", &width, &height, &nr_channels, 0);
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
-        std::cerr << "ERROR::TEXTURE::LOAD_FAILURE\n";
-    }
-    stbi_image_free(data);
-
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    };
-    glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(2.0f, 5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f, 3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f, 2.0f, -2.5f),
-        glm::vec3(1.5f, 0.2f, -1.5f),
-        glm::vec3(-1.3f, 1.0f, -1.5f)
-    };
-    unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    // glGenBuffers(1, &EBO);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // // color attribute
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    // // // color attribute
+    // // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    // // glEnableVertexAttribArray(1);
+    // // texture coord attribute
+    // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     // glEnableVertexAttribArray(1);
-    // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
 
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
+    // // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+    // glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
-    // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    // // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
+    // //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0); 
+    // // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+    // // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+    // glBindVertexArray(0); 
 
     // Shader shader_program = Shader(RESOURCES_PATH "shaders/vertex.vert", RESOURCES_PATH "shaders/fragment.frag");
     Shader shader_program = Shader(RESOURCES_PATH "shaders/container.vert", RESOURCES_PATH "shaders/container.frag");
     glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_CULL_FACE);
 
     Shader cube_shader = Shader(RESOURCES_PATH "shaders/cube.vert", RESOURCES_PATH "shaders/cube.frag");
     Cube cube;
+    Shader chunk_shader = Shader(RESOURCES_PATH "shaders/chunk.vert", RESOURCES_PATH "shaders/chunk.frag");
+    Chunk chunk;
 
     // Model backpack = Model(RESOURCES_PATH "models/default_cube/default_cube.obj");
 
@@ -183,6 +170,11 @@ int main()
 
     glm::mat4 proj = glm::perspective(glm::radians(90.0f), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
 
+    std::cout << "guh\n";
+    // if (glfwWindowShouldClose(window)) {
+    //     std::cout << "guh\n";
+    // }
+    std::cout << glfwWindowShouldClose(window) << "\n";
     while (!glfwWindowShouldClose(window)) {
         float current_frame = (float)glfwGetTime();
         delta_time = current_frame - last_frame;
@@ -196,38 +188,23 @@ int main()
 
         view = camera.get_view_matrix();
 
-        shader_program.use();
-
-        // const float radius = 10.0f;
-        // float cam_x = sin(glfwGetTime()) * radius;
-        // float cam_z = cos(glfwGetTime()) * radius;
-        // view = glm::lookAt(glm::vec3(cam_x, 0.0f, cam_z), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        // view = glm::lookAt(camera_position, camera_position + camera_front, camera_up);
-
-        shader_program.set_mat4("view", view);
-        shader_program.set_mat4("projection", proj);
-
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glBindVertexArray(VAO);
-        for (size_t i = 0; i < 10; i++) {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            shader_program.set_mat4("model", model);
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        // glBindVertexArray(0);
-
+        // model = glm::scale(model, glm::vec3(2.0, 2.0, 2.0));
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::scale(model, glm::vec3(2.0, 2.0, 2.0));
-        cube_shader.use();
-        cube_shader.set_mat4("view", view);
-        cube_shader.set_mat4("projection", proj);
-        cube_shader.set_mat4("model", model);
-        cube.draw(cube_shader);
+        // model = glm::translate(model, glm::vec3(2.0, 1.0, 1.0));
+        // cube_shader.use();
+        // cube_shader.set_mat4("view", view);
+        // cube_shader.set_mat4("projection", proj);
+        // cube_shader.set_mat4("model", model);
+        // cube.draw(cube_shader);
+
+        model = glm::mat4(1.0f);
+        // model = glm::scale(model, glm::vec3(0.1, 0.1, 0.1));
+        chunk_shader.use();
+        chunk_shader.set_mat4("view", view);
+        chunk_shader.set_mat4("projection", proj);
+        chunk_shader.set_mat4("model", model);
+        std::cout << "drawing\n";
+        chunk.draw(chunk_shader);
 
         glBindVertexArray(0);
 
