@@ -4,11 +4,12 @@
 #define CHUNK_H
 
 #include <cstdint>
+#include <vector>
 
 #include "Shader.h"
 
-const unsigned int CHUNK_WIDTH  = 4;
-const unsigned int CHUNK_HEIGHT = 2;
+const unsigned int CHUNK_WIDTH  = 32;
+const unsigned int CHUNK_HEIGHT = 32;
 const unsigned int CHUNK_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
 
 // enum class Face
@@ -39,9 +40,10 @@ public:
     void draw(const Shader& shader) const;
 
 private:
-    uint8_t m_voxels[CHUNK_VOLUME]; // array of voxel ids
-    uint8_t m_vertex_data[CHUNK_VOLUME * 18 * 10];
-    size_t m_num_triangles;
+    uint8_t m_voxels[CHUNK_VOLUME] = {}; // array of voxel ids
+    // uint8_t m_vertex_data[CHUNK_VOLUME * 18 * 10] = {};
+    std::vector<uint8_t> m_vertex_data;
+    size_t m_num_triangles = 0;
     unsigned int m_vao;
 
     void build_mesh();

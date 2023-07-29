@@ -6,11 +6,14 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-enum CameraMovement {
+enum CameraMovement 
+{
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    JUMP,
+    CROUCH,
 };
 
 extern const float YAW;

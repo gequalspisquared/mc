@@ -61,6 +61,12 @@ void Camera::process_keyboard(CameraMovement direction, float delta_time)
     if (direction == RIGHT) {
         m_position += m_right * speed;
     }
+    if (direction == JUMP) {
+        m_position += m_world_up * speed;
+    }
+    if (direction == CROUCH) {
+        m_position -= m_world_up * speed;
+    }
 }
 
 void Camera::process_mouse_movement(float offset_x, float offset_y, GLboolean constrain_pitch)

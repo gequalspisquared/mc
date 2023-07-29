@@ -317,5 +317,11 @@ void process_input(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         camera.process_keyboard(RIGHT, delta_time);
     }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        camera.process_keyboard(JUMP, delta_time);
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+        camera.process_keyboard(CROUCH, delta_time);
+    }
 
 }

@@ -3,6 +3,7 @@
 Chunk::Chunk()
 {
     m_num_triangles = 0;
+    m_vertex_data.resize(CHUNK_VOLUME * 18 * 10);
     build_voxels();
     build_mesh();
 
@@ -21,6 +22,7 @@ Chunk::Chunk()
 
 Chunk::~Chunk()
 {
+    // delete[](m_vertex_data);
 }
 
 void Chunk::draw(const Shader& shader) const
@@ -128,7 +130,8 @@ void Chunk::build_voxels()
     for (uint8_t x = 0; x < CHUNK_WIDTH; x++) {
         for (uint8_t y = 0; y < CHUNK_HEIGHT; y++) {
             for (uint8_t z = 0; z < CHUNK_WIDTH; z++) {
-                m_voxels[x + y*CHUNK_HEIGHT + z*CHUNK_WIDTH] = 1;
+                // if (y == 1) continue;
+                m_voxels[x*CHUNK_WIDTH*CHUNK_HEIGHT + y*CHUNK_WIDTH + z] = 1;
             }
         }
     }
@@ -169,7 +172,7 @@ void Chunk::create_vao(unsigned int& VAO)
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertex_data), m_vertex_data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_vertex_data.size() * sizeof(m_vertex_data[0]), &m_vertex_data[0], GL_STATIC_DRAW);
 
     // position attribute
     std::cout << "position" << "\n";
