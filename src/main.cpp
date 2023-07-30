@@ -145,10 +145,28 @@ int main()
     // // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     // glBindVertexArray(0); 
 
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    int width, height, nr_channels;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* data = stbi_load(RESOURCES_PATH "textures/container.jpg", &width, &height, &nr_channels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cerr << "ERROR::TEXTURE::LOAD_FAILURE\n";
+    }
+    stbi_image_free(data);
+
     // Shader shader_program = Shader(RESOURCES_PATH "shaders/vertex.vert", RESOURCES_PATH "shaders/fragment.frag");
     Shader shader_program = Shader(RESOURCES_PATH "shaders/container.vert", RESOURCES_PATH "shaders/container.frag");
     glEnable(GL_DEPTH_TEST);
-    // glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
 
     Shader cube_shader = Shader(RESOURCES_PATH "shaders/cube.vert", RESOURCES_PATH "shaders/cube.frag");
     Cube cube;
@@ -197,13 +215,14 @@ int main()
         // cube_shader.set_mat4("model", model);
         // cube.draw(cube_shader);
 
+        glBindTexture(GL_TEXTURE_2D, texture);
         model = glm::mat4(1.0f);
         // model = glm::scale(model, glm::vec3(0.1, 0.1, 0.1));
         chunk_shader.use();
         chunk_shader.set_mat4("view", view);
         chunk_shader.set_mat4("projection", proj);
         chunk_shader.set_mat4("model", model);
-        std::cout << "drawing\n";
+        // std::cout << "drawing\n";
         chunk.draw(chunk_shader);
 
         glBindVertexArray(0);

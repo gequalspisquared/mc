@@ -8,8 +8,8 @@
 
 #include "Shader.h"
 
-const unsigned int CHUNK_WIDTH  = 32;
-const unsigned int CHUNK_HEIGHT = 32;
+const unsigned int CHUNK_WIDTH  = 16;
+const unsigned int CHUNK_HEIGHT = 4;
 const unsigned int CHUNK_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
 
 // enum class Face
