@@ -1,25 +1,14 @@
+#include "Blocks.h"
 #include "Chunk.h"
 
 Chunk::Chunk()
 {
     m_num_triangles = 0;
     m_vertex_data.resize(CHUNK_VOLUME * 18 * 5);
-    std::cout << "Vertex size: " << m_vertex_data.size() << "\n";
+
     build_voxels();
     build_mesh();
-
-    std::cout << m_num_triangles << "\n";
-    // for (size_t i = 0; i < 1 * 18; i++) {
-    //     std::cout << "x: " << (int)m_vertex_data[5*i]  << " "
-    //               << "y: " << (int)m_vertex_data[5*i + 1] << " "
-    //               << "z: " << (int)m_vertex_data[5*i + 2] << " "
-    //               << "vid: " << (int)m_vertex_data[5*i + 3] << " "
-    //               << "fid: " << (int)m_vertex_data[5*i + 4] << "\n";
-    // }
-
     create_vao(m_vao);
-    std::cout << "Vertex size: " << m_vertex_data.size() << "\n";
-    std::cout << "Built chunk\n";
 }
 
 Chunk::~Chunk()
@@ -52,16 +41,7 @@ void Chunk::build_mesh()
 
                 // Vertex vertices[6];
 
-                // // top
-                // if (is_void(x, y + 1, z)) {
-                //     Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 0), voxel_id, (uint8_t)0};
-                //     Vertex v1 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 0), voxel_id, (uint8_t)0};
-                //     Vertex v2 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 1), voxel_id, (uint8_t)0};
-                //     Vertex v3 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 1), voxel_id, (uint8_t)0};
-                //     Vertex vertices[] = {v0, v3, v2, v0, v2, v1};
-                //     index = add_data(index, vertices);
-                //     num_triangles += 2;
-                // }
+                // top
                 if (is_void(x, y + 1, z)) {
                     Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 0), voxel_id, (uint8_t)0};
                     Vertex v1 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 0), voxel_id, (uint8_t)0};
@@ -72,16 +52,7 @@ void Chunk::build_mesh()
                     num_triangles += 2;
                 }
 
-                // // front
-                // if (is_void(x + 1, y, z)) {
-                //     Vertex v0 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 0), voxel_id,(uint8_t)1};
-                //     Vertex v1 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 0), voxel_id,(uint8_t)1};
-                //     Vertex v2 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 1), voxel_id,(uint8_t)1};
-                //     Vertex v3 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 1), voxel_id,(uint8_t)1};
-                //     Vertex vertices[] = {v0, v2, v3, v0, v1, v2};
-                //     index = add_data(index, vertices);
-                //     num_triangles += 2;
-                // }
+                // front
                 if (is_void(x + 1, y, z)) {
                     Vertex v0 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 1), voxel_id, (uint8_t)1};
                     Vertex v1 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 1), voxel_id, (uint8_t)1};
@@ -93,15 +64,6 @@ void Chunk::build_mesh()
                 }
 
                 // left
-                // if (is_void(x, y, z - 1)) {
-                //     Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 0), voxel_id, (uint8_t)2};
-                //     Vertex v1 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 0), voxel_id, (uint8_t)2};
-                //     Vertex v2 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 0), voxel_id, (uint8_t)2};
-                //     Vertex v3 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 0), voxel_id, (uint8_t)2};
-                //     Vertex vertices[] = {v0, v2, v3, v0, v1, v2};
-                //     index = add_data(index, vertices);
-                //     num_triangles += 2;
-                // }
                 if (is_void(x, y, z - 1)) {
                     Vertex v0 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 0), voxel_id, (uint8_t)2};
                     Vertex v1 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 0), voxel_id, (uint8_t)2};
@@ -113,15 +75,6 @@ void Chunk::build_mesh()
                 }
 
                 // back
-                // if (is_void(x - 1, y, z)) {
-                //     Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 0), voxel_id, (uint8_t)3};
-                //     Vertex v1 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 0), voxel_id, (uint8_t)3};
-                //     Vertex v2 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 1), voxel_id, (uint8_t)3};
-                //     Vertex v3 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 1), voxel_id, (uint8_t)3};
-                //     Vertex vertices[] = {v0, v3, v2, v0, v2, v1};
-                //     index = add_data(index, vertices);
-                //     num_triangles += 2;
-                // }
                 if (is_void(x - 1, y, z)) {
                     Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 0), voxel_id, (uint8_t)3};
                     Vertex v1 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 0), voxel_id, (uint8_t)3};
@@ -133,15 +86,6 @@ void Chunk::build_mesh()
                 }
 
                 // right
-                // if (is_void(x, y, z + 1)) {
-                //     Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 1), voxel_id, (uint8_t)4};
-                //     Vertex v1 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 1), voxel_id, (uint8_t)4};
-                //     Vertex v2 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 1), voxel_id, (uint8_t)4};
-                //     Vertex v3 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 1), voxel_id, (uint8_t)4};
-                //     Vertex vertices[] = {v0, v3, v2, v0, v2, v1};
-                //     index = add_data(index, vertices);
-                //     num_triangles += 2;
-                // }
                 if (is_void(x, y, z + 1)) {
                     Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 1), voxel_id, (uint8_t)4};
                     Vertex v1 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 1), voxel_id, (uint8_t)4};
@@ -153,15 +97,6 @@ void Chunk::build_mesh()
                 }
 
                 // bottom 
-                // if (is_void(x, y - 1, z)) {
-                //     Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 0), voxel_id, (uint8_t)5};
-                //     Vertex v1 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 0), voxel_id, (uint8_t)5};
-                //     Vertex v2 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 1), voxel_id, (uint8_t)5};
-                //     Vertex v3 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 1), voxel_id, (uint8_t)5};
-                //     Vertex vertices[] = {v0, v2, v3, v0, v1, v2};
-                //     index = add_data(index, vertices);
-                //     num_triangles += 2;
-                // }
                 if (is_void(x, y - 1, z)) {
                     Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 1), voxel_id, (uint8_t)5};
                     Vertex v1 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 1), voxel_id, (uint8_t)5};
@@ -186,11 +121,26 @@ void Chunk::build_voxels()
     for (uint8_t x = 0; x < CHUNK_WIDTH; x++) {
         for (uint8_t y = 0; y < CHUNK_HEIGHT; y++) {
             for (uint8_t z = 0; z < CHUNK_WIDTH; z++) {
-                // if (y == 1) continue;
-                // if (x == 1 || y == 2 || z == 7) {
-                //     continue;
-                // }
-                m_voxels[x*CHUNK_WIDTH*CHUNK_HEIGHT + y*CHUNK_WIDTH + z] = 1;
+                size_t index = x*CHUNK_WIDTH*CHUNK_HEIGHT + y*CHUNK_WIDTH + z;
+                if (y == 0) {
+                    m_voxels[index] = (uint8_t)Blocks::bedrock;
+                    continue;
+                }
+                if (y < 11) {
+                    m_voxels[index] = (uint8_t)Blocks::stone;
+                    continue;
+                }
+                if (y < 15) {
+                    m_voxels[index] = (uint8_t)Blocks::dirt;
+                    continue;
+                }
+                if (y == 15) {
+                    m_voxels[index] = (uint8_t)Blocks::grass;
+                    continue;
+                }
+                if (y > 15) {
+                    continue;
+                }
             }
         }
     }
@@ -235,15 +185,15 @@ void Chunk::create_vao(unsigned int& VAO)
 
     // position attribute
     std::cout << "position" << "\n";
-    glVertexAttribPointer(0, 3, GL_UNSIGNED_BYTE, GL_FALSE, 5 * sizeof(uint8_t), (void *)0);
+    glVertexAttribIPointer(0, 3, GL_UNSIGNED_BYTE, 5 * sizeof(uint8_t), (void *)0);
     glEnableVertexAttribArray(0);
     // voxel id
     std::cout << "voxel" << "\n";
-    glVertexAttribPointer(1, 1, GL_UNSIGNED_BYTE, GL_FALSE, 5 * sizeof(uint8_t), (void*)(3 * sizeof(uint8_t)));
+    glVertexAttribIPointer(1, 1, GL_UNSIGNED_BYTE, 5 * sizeof(uint8_t), (void*)(3 * sizeof(uint8_t)));
     glEnableVertexAttribArray(1);
     // face id
     std::cout << "face" << "\n";
-    glVertexAttribPointer(2, 1, GL_UNSIGNED_BYTE, GL_FALSE, 5 * sizeof(uint8_t), (void *)(4 * sizeof(uint8_t)));
+    glVertexAttribIPointer(2, 1, GL_UNSIGNED_BYTE, 5 * sizeof(uint8_t), (void *)(4 * sizeof(uint8_t)));
     glEnableVertexAttribArray(2);
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind

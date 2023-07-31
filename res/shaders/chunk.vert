@@ -1,17 +1,13 @@
 #version 460 core
 
-layout (location = 0) in vec3 position;
+layout (location = 0) in ivec3 position;
 layout (location = 1) in int voxel_id;
 layout (location = 2) in int face_id;
-
-// in vec2 texture_coordinates;
 
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
 
-// out vec3 pos;
-// out int voxel_id;
 out vec2 uv;
 
 const vec2 uv_coords[4] = vec2[4](
@@ -21,20 +17,41 @@ const vec2 uv_coords[4] = vec2[4](
 
 const int uv_indices[6] = int[6](
     0, 3, 1, 0, 2, 3
-    // 1, 0, 2, 1, 2, 3,
-    // 0, 2, 3, 1, 0, 3
-    // 3, 0, 2, 3, 1, 0 // original 
-    // 0, 1, 3, 2, 0, 3
-    // 3, 0, 3, 0, 1, 3
-    // 3, 2, 0, 3, 1, 0
-    // 2, 0, 1, 2, 3, 0
 );
+
+const int num_rows = 16;
+
+vec2 id_to_uv_offset(int id) 
+{
+    // id = id - 1;
+    int offset_x = (id - 1)%num_rows;
+    int offset_y = num_rows - (id - 1)/num_rows - 1;
+
+    if (id == 1) { // grass block
+        if (face_id == 5) {
+            offset_x = offset_x + 2;
+        } else if (face_id > 0) {
+            offset_x = offset_x + 3;
+        }
+    }
+
+    return vec2(offset_x, offset_y);
+    // if (id == 1) {
+    //     return vec2(1, 15);
+    // }
+    // else if (id == 2) {
+    //     return vec2(4, 15);
+    // }
+    // return vec2(0, 0);
+}
 
 void main() 
 {
-    // int uv_index = gl_VertexID % 6 + (face_id & 1) * 6;
     int uv_index = gl_VertexID % 6;
+
     uv = uv_coords[uv_indices[uv_index]];
+    uv = uv + id_to_uv_offset(voxel_id);
+    uv = uv / num_rows;
+
     gl_Position = projection * view * model * vec4(position, 1.0);
-    // pos = position;
 }
