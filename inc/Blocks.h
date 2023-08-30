@@ -5,6 +5,7 @@
 
 enum class Blocks
 {
+    air = 0,
     grass = 1,
     stone = 2,
     dirt = 3,

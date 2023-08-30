@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -20,8 +21,8 @@ void scroll_callback(GLFWwindow* window, double offset_x, double offset_y);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void process_input(GLFWwindow* window);
 
-const unsigned int SCR_WIDTH  = 1600;
-const unsigned int SCR_HEIGHT = 900;
+const unsigned int SCR_WIDTH  = 2560;
+const unsigned int SCR_HEIGHT = 1440;
 
 Camera camera = Camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
@@ -199,6 +200,9 @@ int main()
         float current_frame = (float)glfwGetTime();
         delta_time = current_frame - last_frame;
         last_frame = current_frame;
+
+        glfwSetWindowTitle(window, std::to_string(1.0f / delta_time).c_str());
+
         // input
         process_input(window);
 
@@ -251,7 +255,7 @@ GLFWwindow* initialize_and_create_window(unsigned int width, unsigned int height
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), NULL);
     if (!window) {
         std::cerr << "Failed to initialize GLFW\n";
         glfwTerminate();
@@ -266,8 +270,8 @@ GLFWwindow* initialize_and_create_window(unsigned int width, unsigned int height
     }
 
     glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, key_callback);
@@ -303,7 +307,6 @@ void mouse_callback(GLFWwindow* window, double pos_x, double pos_y)
 
 void scroll_callback(GLFWwindow* window, double offset_x, double offset_y)
 {
-
     camera.process_mouse_scroll((float)offset_y);
 }
 

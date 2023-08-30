@@ -15,7 +15,9 @@ add_subdirectory(lib/glad)
 add_subdirectory(lib/stb_image)
 add_subdirectory(lib/glm)
 
-file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS 
+     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+     "${CMAKE_CURRENT_SOURCE_DIR}/inc/*.h")
 
 add_executable(mc "${SOURCE_FILES}")
 
