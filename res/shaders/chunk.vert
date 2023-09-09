@@ -4,6 +4,7 @@ layout (location = 0) in ivec3 position;
 layout (location = 1) in int voxel_id;
 layout (location = 2) in int face_id;
 
+uniform ivec3 world_position;
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
@@ -53,5 +54,5 @@ void main()
     uv = uv + id_to_uv_offset(voxel_id);
     uv = uv / num_rows;
 
-    gl_Position = projection * view * model * vec4(position, 1.0);
+    gl_Position = projection * view * model * vec4(world_position + position, 1.0);
 }

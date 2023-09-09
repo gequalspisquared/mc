@@ -8,7 +8,7 @@
 class Window
 {
 public:
-    Window(unsigned int width = 2560, unsigned int height = 1440, const char* title);
+    Window(unsigned int width = 2560, unsigned int height = 1440, const char* title = "Default title");
     ~Window();
 
     void resize(int width, int height);

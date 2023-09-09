@@ -3,10 +3,11 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 #include "Window.h"
 #include "Player.h"
+#include "World.h"
 
 class Game
 {
@@ -28,13 +29,17 @@ private:
     Window m_window;
 
     Player m_player;
+
+    World m_world;
     
     unsigned int m_window_width  = 2560;
     unsigned int m_window_height = 1440;
+    unsigned int m_texture_atlas;
 
     float m_delta_time = 0.0f;
     float m_last_frame = 0.0f;
 
+    void draw() const;
 };
 
 #endif

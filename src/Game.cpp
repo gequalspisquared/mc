@@ -2,15 +2,21 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <stb_image.h>
 
 #include "Game.h"
 
 // static GLFWwindow* create
 static void initialize_callbacks(Game* game);
+static unsigned int initialize_texture_atlas();
 
 Game::Game()
+    : m_texture_atlas(initialize_texture_atlas())
 {
-    m_window = Window(m_window_width, m_window_height, "Guh");
+    // m_window = Window(m_window_width, m_window_height, "Guh");
     initialize_callbacks(this);
     // glfwSetWindowUserPointer(m_window.get_window(), this);
 
@@ -41,10 +47,35 @@ int Game::run()
         // handle input
         // update world
         // render
-        
+
+        draw();
     }
 
     return 0;
+}
+
+void Game::draw() const
+{
+    static const glm::mat4 proj = glm::perspective(glm::radians(90.0f), (float)m_window_width/(float)m_window_height, 0.1f, 100.0f);
+    static const glm::mat4 model = glm::mat4(1.0f);
+
+    static glm::mat4 view;
+    view = m_player.get_view_matrix();
+
+    glClearColor(0.53f, 0.81f, 0.92f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    m_world.chunk_shader.set_mat4("view", view);
+    m_world.chunk_shader.set_mat4("projection", proj);
+    m_world.chunk_shader.set_mat4("model", model);
+
+    glBindTexture(GL_TEXTURE_2D, m_texture_atlas);
+    m_world.draw();
+
+    glBindVertexArray(0);
+
+    glfwSwapBuffers(m_window.get_window());
+    glfwPollEvents();
 }
 
 GLFWwindow* Game::get_window() const
@@ -97,4 +128,29 @@ static void initialize_callbacks(Game* game)
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetKeyCallback(window, key_callback);
+}
+
+static unsigned int initialize_texture_atlas()
+{
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    int width, height, nr_channels;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* data = stbi_load(RESOURCES_PATH "textures/atlas.png", &width, &height, &nr_channels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    } else {
+        std::cerr << "ERROR::TEXTURE::LOAD_FAILURE\n";
+    }
+    stbi_image_free(data);
+
+    return texture;
 }

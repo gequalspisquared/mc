@@ -46,6 +46,11 @@ glm::mat4 Camera::get_view_matrix() const
     return glm::lookAt(m_position, m_position + m_front, m_up);
 }
 
+glm::vec3 Camera::get_position() const
+{
+    return m_position;
+}
+
 void Camera::process_keyboard(CameraMovement direction, float delta_time)
 {
     float speed = m_speed * delta_time;

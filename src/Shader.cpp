@@ -1,5 +1,7 @@
 #include "Shader.h"
 
+#include <glad/glad.h>
+
 static unsigned int create_shader(GLenum shader_type, const char* shader_path);
 static unsigned int create_program(unsigned int vertex_shader, unsigned int fragment_shader) ;
 
@@ -77,6 +79,11 @@ void Shader::set_mat3(const std::string &name, const glm::mat3 &value) const
 void Shader::set_mat4(const std::string &name, const glm::mat4 &value) const
 {
     glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, &value[0][0]);
+}
+
+void Shader::set_ivec3(const std::string &name, int x, int y, int z) const
+{
+    glUniform3i(glGetUniformLocation(m_id, name.c_str()), x, y, z);
 }
 
 static std::string extract_code(const char* shader_path)

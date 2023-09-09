@@ -8,7 +8,7 @@
 #include <sstream>
 #include <iostream>
 
-#include <glad/glad.h>
+// #include <glad/glad.h>
 #include <glm/glm.hpp>
 
 class Shader
@@ -30,6 +30,7 @@ public:
     void set_mat2 (const std::string& name, const glm::mat2& value) const;
     void set_mat3 (const std::string& name, const glm::mat3& value) const;
     void set_mat4 (const std::string& name, const glm::mat4& value) const;
+    void set_ivec3 (const std::string& name, int x, int y, int z) const;
 
 private:
     unsigned int m_id;

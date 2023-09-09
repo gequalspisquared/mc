@@ -22,29 +22,39 @@ const unsigned int CHUNK_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
 //     bottom
 // };
 
+typedef uint8_t voxel_id;
+
 struct Vertex 
 {
     uint8_t x;
     uint8_t y;
     uint8_t z;
-    uint8_t voxel_id;
+    voxel_id vox_id;
     uint8_t face_id;
+};
+
+struct WorldPosition
+{
+    int x = 0;
+    int y = 0;
+    int z = 0;
 };
 
 class Chunk
 {
 public:
-    Chunk();
+    Chunk(WorldPosition world_position = WorldPosition());
     ~Chunk();
 
     void draw(const Shader& shader) const;
 
 private:
-    uint8_t m_voxels[CHUNK_VOLUME] = {}; // array of voxel ids
+    voxel_id m_voxels[CHUNK_VOLUME] = {}; // array of voxel ids
     // uint8_t m_vertex_data[CHUNK_VOLUME * 18 * 10] = {};
     std::vector<uint8_t> m_vertex_data;
     size_t m_num_triangles = 0;
     unsigned int m_vao;
+    WorldPosition m_world_position;
 
     void build_mesh();
     void build_voxels();

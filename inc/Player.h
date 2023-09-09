@@ -14,11 +14,15 @@ public:
     ~Player();
 
     void process_keyboard_input(int key, int scancode, int action, int mods);
-    void process_mouse_input(float offset_x, float offset_y, GLboolean constrain_pitch = true)
+    void process_mouse_input(float offset_x, float offset_y, GLboolean constrain_pitch = true);
 
-    Camera camera;
+    glm::mat4 get_view_matrix() const;
+    glm::vec3 get_position() const;
 
-    glm::vec3 position;
+private:
+    Camera m_camera;
+
+    // glm::vec3 position;
 };
 
 #endif

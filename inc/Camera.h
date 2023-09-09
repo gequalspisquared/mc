@@ -27,6 +27,7 @@ public:
     ~Camera();
 
     glm::mat4 get_view_matrix() const;
+    glm::vec3 get_position() const;
 
     void process_keyboard(CameraMovement direction, float delta_time);
     void process_mouse_movement(float offset_x, float offset_y, GLboolean constrain_pitch = true);
