@@ -44,7 +44,8 @@ static GLFWwindow* create_window(unsigned int width, unsigned int height, const 
 #endif
 
     // glfwGetPrimaryMonitor() makes it fullscreen
-    GLFWwindow* window = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), NULL);
+    // GLFWwindow* window = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), NULL);
+    GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (!window) {
         std::cerr << "Failed to initialize GLFW\n";
         glfwTerminate();

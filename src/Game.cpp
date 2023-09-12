@@ -44,7 +44,7 @@ int Game::run()
 
         // TODO
 
-        // handle input
+        // handle input // taken care of by callbacks
         // update world
         // render
 
@@ -59,12 +59,14 @@ void Game::draw() const
     static const glm::mat4 proj = glm::perspective(glm::radians(90.0f), (float)m_window_width/(float)m_window_height, 0.1f, 100.0f);
     static const glm::mat4 model = glm::mat4(1.0f);
 
-    static glm::mat4 view;
+    // static glm::mat4 view;
+    glm::mat4 view;
     view = m_player.get_view_matrix();
 
     glClearColor(0.53f, 0.81f, 0.92f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    m_world.chunk_shader.use();
     m_world.chunk_shader.set_mat4("view", view);
     m_world.chunk_shader.set_mat4("projection", proj);
     m_world.chunk_shader.set_mat4("model", model);
@@ -76,6 +78,8 @@ void Game::draw() const
 
     glfwSwapBuffers(m_window.get_window());
     glfwPollEvents();
+
+    glfwSetWindowTitle(m_window.get_window(), std::to_string(1.0f / m_delta_time).c_str());
 }
 
 GLFWwindow* Game::get_window() const
@@ -90,7 +94,23 @@ void Game::process_screen_resize(int width, int height)
 
 void Game::process_mouse_input(double pos_x, double pos_y)
 {
+    static float last_x = m_window_width / 2.0f;
+    static float last_y = m_window_height / 2.0f;
+    static bool first_mouse = true;
 
+    if (first_mouse) {
+        last_x = (float)pos_x;
+        last_y = (float)pos_y;
+        first_mouse = false;
+    }
+
+    float offset_x = (float)pos_x - last_x;
+    float offset_y = last_y - (float)pos_y;
+
+    last_x = (float)pos_x;
+    last_y = (float)pos_y;
+
+    m_player.process_mouse_input(offset_x, offset_y);
 }
 
 void Game::process_scroll_input(double offset_x, double offset_y)
@@ -100,7 +120,11 @@ void Game::process_scroll_input(double offset_x, double offset_y)
 
 void Game::process_keyboard_input(int key, int scancode, int action, int mods)
 {
-
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(m_window.get_window(), true);
+    }
+    
+    m_player.process_keyboard_input(key, scancode, action, mods, m_delta_time);
 }
 
 static void initialize_callbacks(Game* game)

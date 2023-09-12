@@ -13,7 +13,7 @@ public:
     Player();
     ~Player();
 
-    void process_keyboard_input(int key, int scancode, int action, int mods);
+    void process_keyboard_input(int key, int scancode, int action, int mods, float delta_time);
     void process_mouse_input(float offset_x, float offset_y, GLboolean constrain_pitch = true);
 
     glm::mat4 get_view_matrix() const;
