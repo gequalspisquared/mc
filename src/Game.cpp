@@ -48,6 +48,7 @@ int Game::run()
         // update world
         // render
 
+        m_player.process_keymap(m_delta_time);
         draw();
     }
 
@@ -120,6 +121,16 @@ void Game::process_scroll_input(double offset_x, double offset_y)
 
 void Game::process_keyboard_input(int key, int scancode, int action, int mods)
 {
+    static bool wireframe_on = false;
+    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        if (wireframe_on == false) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        } else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+        wireframe_on = !wireframe_on;
+    }
+
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(m_window.get_window(), true);
     }
