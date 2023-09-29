@@ -7,7 +7,8 @@
 
 #include "Window.h"
 #include "Player.h"
-#include "World.h"
+#include "Chunk.h"
+// #include "World.h"
 
 class Game
 {
@@ -30,7 +31,11 @@ private:
 
     Player m_player;
 
-    World m_world;
+
+    Chunk m_chunk;
+    Shader m_chunk_shader = Shader(RESOURCES_PATH "shaders/chunk.vert", RESOURCES_PATH "shaders/chunk.frag");
+
+    // World m_world;
     
     unsigned int m_window_width  = 2560;
     unsigned int m_window_height = 1440;

@@ -43,6 +43,7 @@ static GLFWwindow* create_window(unsigned int width, unsigned int height, const 
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
+    // glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
     // glfwGetPrimaryMonitor() makes it fullscreen
     // GLFWwindow* window = glfwCreateWindow(width, height, title, glfwGetPrimaryMonitor(), NULL);
     GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);

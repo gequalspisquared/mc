@@ -1,0 +1,72 @@
+#pragma once
+
+#ifndef CHUNK_H
+#define CHUNK_H
+
+#include <cstdint>
+#include <vector>
+
+#include "Shader.h"
+// #include "World.h"
+
+class World;
+
+const unsigned int CHUNK_WIDTH  = 1;
+const unsigned int CHUNK_HEIGHT = 1;
+const unsigned int CHUNK_VOLUME = CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT;
+
+// enum class Face
+// {
+//     top,
+//     front,
+//     left,
+//     back,
+//     right,
+//     bottom
+// };
+
+typedef uint8_t voxel_id_t;
+typedef uint8_t face_id_t;
+
+struct Vertex 
+{
+    uint8_t x;
+    uint8_t y;
+    uint8_t z;
+    voxel_id voxel_id;
+    face_id face_id;
+};
+
+struct WorldPosition
+{
+    int x = 0;
+    int y = 0;
+    int z = 0;
+};
+
+class Chunk
+{
+public:
+    Chunk(World* world = nullptr, WorldPosition world_position = WorldPosition());
+    ~Chunk();
+
+    void draw(const Shader& shader) const;
+    void update();
+
+private:
+    voxel_id m_voxels[CHUNK_VOLUME] = {}; // array of voxel ids
+    // uint8_t m_vertex_data[CHUNK_VOLUME * 18 * 10] = {};
+    std::vector<uint8_t> m_vertex_data;
+    size_t m_num_triangles = 0;
+    unsigned int m_vao;
+    WorldPosition m_world_position;
+    World* m_world;
+
+    void build_mesh();
+    void build_voxels();
+    void create_vao(unsigned int& VAO);
+    size_t add_data(size_t index, Vertex vertices[6]);
+    bool is_void(int x, int y, int z) const;
+};
+
+#endif

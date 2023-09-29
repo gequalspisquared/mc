@@ -3,21 +3,10 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <map>
-
 #include <glm/glm.hpp>
 
 #include "Camera.h"
 
-enum Keys
-{
-    W,
-    A,
-    S,
-    D,
-    SPACE,
-    LEFT_CONTROL
-};
 
 class Player
 {
@@ -34,9 +23,6 @@ public:
 
 private:
     Camera m_camera;
-    std::map<Keys, bool> m_keys_pressed;
-
-    // glm::vec3 position;
 };
 
 #endif

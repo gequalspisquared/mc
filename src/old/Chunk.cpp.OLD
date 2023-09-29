@@ -1,0 +1,291 @@
+#include <iostream>
+#include <memory>
+
+#include <glad/glad.h>
+
+#include "Blocks.h"
+#include "Chunk.h"
+#include "World.h"
+
+static size_t get_chunk_index(const WorldPosition& world_position);
+
+Chunk::Chunk(World* world, WorldPosition world_position)
+    : m_world_position(world_position)
+    , m_world(world)
+{
+    m_num_triangles = 0;
+    m_vertex_data.resize(CHUNK_VOLUME * 18 * 5);
+
+    build_voxels();
+
+    std::cout << "Exiting chunk constructor\n";
+}
+
+Chunk::~Chunk()
+{
+    // delete[](m_vertex_data);
+}
+
+void Chunk::draw(const Shader& shader) const
+{
+    // std::cout << "Drawing chunk\n";
+    int world_x = m_world_position.x * CHUNK_WIDTH;
+    int world_y = m_world_position.y * CHUNK_HEIGHT;
+    int world_z = m_world_position.z * CHUNK_WIDTH;
+    shader.set_ivec3("world_position", world_x, world_y, world_z);
+
+    glBindVertexArray(m_vao);
+    glDrawArrays(GL_TRIANGLES, 0, m_num_triangles * 3);
+}
+
+void Chunk::build_mesh() 
+{
+    std::cout << "Building mesh\n";
+    size_t index = 0;
+    size_t num_triangles = 0;
+    m_num_triangles = 0;
+
+    for (size_t x = 0; x < CHUNK_WIDTH; x++) {
+        for (size_t y = 0; y < CHUNK_HEIGHT; y++) {
+            for (size_t z = 0; z < CHUNK_WIDTH; z++) {
+                voxel_id id = m_voxels[x*CHUNK_WIDTH*CHUNK_HEIGHT + y*CHUNK_WIDTH + z];
+                // std::cout << (int)voxel_id << "\n";
+                if (!id) {
+                    continue;
+                }
+
+                // Vertex vertices[6];
+
+                // top
+                if (is_void(x, y + 1, z)) {
+                    Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 0), id, (uint8_t)0};
+                    Vertex v1 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 0), id, (uint8_t)0};
+                    Vertex v2 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 1), id, (uint8_t)0};
+                    Vertex v3 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 1), id, (uint8_t)0};
+                    Vertex vertices[] = {v0, v3, v1, v0, v2, v3};
+                    index = add_data(index, vertices);
+                    num_triangles += 2;
+                }
+
+                // front
+                if (is_void(x + 1, y, z)) {
+                    Vertex v0 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 1), id, (uint8_t)1};
+                    Vertex v1 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 1), id, (uint8_t)1};
+                    Vertex v2 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 0), id, (uint8_t)1};
+                    Vertex v3 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 0), id, (uint8_t)1};
+                    Vertex vertices[] = {v0, v3, v1, v0, v2, v3};
+                    index = add_data(index, vertices);
+                    num_triangles += 2;
+                }
+
+                // left
+                if (is_void(x, y, z - 1)) {
+                    Vertex v0 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 0), id, (uint8_t)2};
+                    Vertex v1 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 0), id, (uint8_t)2};
+                    Vertex v2 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 0), id, (uint8_t)2};
+                    Vertex v3 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 0), id, (uint8_t)2};
+                    Vertex vertices[] = {v0, v3, v1, v0, v2, v3};
+                    index = add_data(index, vertices);
+                    num_triangles += 2;
+                }
+
+                // back
+                if (is_void(x - 1, y, z)) {
+                    Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 0), id, (uint8_t)3};
+                    Vertex v1 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 0), id, (uint8_t)3};
+                    Vertex v2 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 1), id, (uint8_t)3};
+                    Vertex v3 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 1), id, (uint8_t)3};
+                    Vertex vertices[] = {v0, v3, v1, v0, v2, v3};
+                    index = add_data(index, vertices);
+                    num_triangles += 2;
+                }
+
+                // right
+                if (is_void(x, y, z + 1)) {
+                    Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 1), id, (uint8_t)4};
+                    Vertex v1 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 1), uint8_t(z + 1), id, (uint8_t)4};
+                    Vertex v2 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 1), id, (uint8_t)4};
+                    Vertex v3 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 1), uint8_t(z + 1), id, (uint8_t)4};
+                    Vertex vertices[] = {v0, v3, v1, v0, v2, v3};
+                    index = add_data(index, vertices);
+                    num_triangles += 2;
+                }
+
+                // bottom 
+                if (is_void(x, y - 1, z)) {
+                    Vertex v0 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 1), id, (uint8_t)5};
+                    Vertex v1 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 1), id, (uint8_t)5};
+                    Vertex v2 = Vertex{(uint8_t)(x + 0), (uint8_t)(y + 0), uint8_t(z + 0), id, (uint8_t)5};
+                    Vertex v3 = Vertex{(uint8_t)(x + 1), (uint8_t)(y + 0), uint8_t(z + 0), id, (uint8_t)5};
+                    Vertex vertices[] = {v0, v3, v1, v0, v2, v3};
+                    index = add_data(index, vertices);
+                    num_triangles += 2;
+                }
+            }
+        }
+    }
+
+    std::cout << "Index: " << index << "\n";
+    std::cout << "Num triangles: " << num_triangles << "\n";
+    m_num_triangles = num_triangles;
+
+    std::cout << "Finished building mesh\n";
+}
+
+void Chunk::build_voxels()
+{
+    std::cout << "Building voxels\n";
+    for (uint8_t x = 0; x < CHUNK_WIDTH; x++) {
+        for (uint8_t y = 0; y < CHUNK_HEIGHT; y++) {
+            for (uint8_t z = 0; z < CHUNK_WIDTH; z++) {
+                size_t index = x*CHUNK_WIDTH*CHUNK_HEIGHT + y*CHUNK_WIDTH + z;
+                if (y == 0) {
+                    m_voxels[index] = (uint8_t)Blocks::bedrock;
+                    continue;
+                }
+                if (y < 11) {
+                    m_voxels[index] = (uint8_t)Blocks::stone;
+                    continue;
+                }
+                if (y < 15) {
+                    m_voxels[index] = (uint8_t)Blocks::dirt;
+                    continue;
+                }
+                if (y == 15) {
+                    m_voxels[index] = (uint8_t)Blocks::grass;
+                    continue;
+                }
+                if (y > 15) {
+                    continue;
+                }
+            }
+        }
+    }
+}
+
+size_t Chunk::add_data(size_t index, Vertex vertices[6])
+{
+    // std::cout << "Adding data\n";
+    for (size_t i = 0; i < 6; i++) {
+        Vertex vertex = vertices[i];
+        m_vertex_data[index++] = vertex.x;
+        m_vertex_data[index++] = vertex.y;
+        m_vertex_data[index++] = vertex.z;
+        m_vertex_data[index++] = vertex.vox_id;
+        m_vertex_data[index++] = vertex.face_id;
+    }
+    return index;
+}
+
+bool Chunk::is_void(int x, int y, int z) const
+{
+    // front
+    if (x == CHUNK_WIDTH && m_world_position.x < (WORLD_WIDTH - 1)) {
+        size_t index = get_chunk_index(WorldPosition{m_world_position.x + 1, m_world_position.y, m_world_position.z});
+        if (index < WORLD_AREA) {
+            std::cout << "edge +x\n";
+            std::shared_ptr<Chunk> other = m_world->m_chunks[index];
+
+            return !(other->m_voxels[0*CHUNK_WIDTH*CHUNK_HEIGHT + y*CHUNK_WIDTH + z]);
+        }
+    }
+
+    // left
+    if (z == 0 && m_world_position.z > 0) {
+        size_t index = get_chunk_index(WorldPosition{m_world_position.x, m_world_position.y, m_world_position.z - 1});
+        if (index < WORLD_AREA) {
+            std::cout << "edge -z (" << z << ")\n";
+            std::shared_ptr<Chunk> other = m_world->m_chunks[index];
+            std::cout << (int)other->m_voxels[x*CHUNK_WIDTH*CHUNK_HEIGHT + y*CHUNK_WIDTH + (CHUNK_WIDTH - z)] << "\n";
+
+            return !(other->m_voxels[x*CHUNK_WIDTH*CHUNK_HEIGHT + y*CHUNK_WIDTH + (CHUNK_WIDTH - 1)]);
+        }
+    }
+
+    // back
+    if (x == 0 && m_world_position.x > 0) {
+        size_t index = get_chunk_index(WorldPosition{m_world_position.x - 1, m_world_position.y, m_world_position.z});
+        if (index < WORLD_AREA) {
+            std::cout << "edge -x\n";
+            std::shared_ptr<Chunk> other = m_world->m_chunks[index];
+
+            return !(other->m_voxels[(CHUNK_WIDTH - 1)*CHUNK_WIDTH*CHUNK_HEIGHT + y*CHUNK_WIDTH + z]);
+        }
+    }
+
+    // right
+    if (z == CHUNK_WIDTH && m_world_position.z < (WORLD_WIDTH - 1)) {
+        size_t index = get_chunk_index(WorldPosition{m_world_position.x, m_world_position.y, m_world_position.z + 1});
+        if (index < WORLD_AREA) {
+            std::cout << "edge +z\n";
+            std::shared_ptr<Chunk> other = m_world->m_chunks[index];
+            std::cout << "getting other->m_num_triangles\n";
+
+            return !(other->m_voxels[x*CHUNK_WIDTH*CHUNK_HEIGHT + y*CHUNK_WIDTH + 0]);
+        }
+    }
+
+
+    // inside
+    if (0 < x && x < CHUNK_WIDTH && 0 < y && y < CHUNK_HEIGHT && 0 < z && z < CHUNK_WIDTH) {
+        return !(m_voxels[x*CHUNK_WIDTH*CHUNK_HEIGHT + y*CHUNK_WIDTH + z]);
+    }
+
+    return true;
+}
+
+void Chunk::create_vao(unsigned int& VAO)
+{
+    std::cout << "Creating VAO\n";
+    // static bool ran = false;
+
+    // if (ran) return;
+    unsigned int VBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, m_vertex_data.size() * sizeof(m_vertex_data[0]), &m_vertex_data[0], GL_STATIC_DRAW);
+
+    // position attribute
+    std::cout << "position" << "\n";
+    glVertexAttribIPointer(0, 3, GL_UNSIGNED_BYTE, 5 * sizeof(uint8_t), (void *)0);
+    glEnableVertexAttribArray(0);
+    // voxel id
+    std::cout << "voxel" << "\n";
+    glVertexAttribIPointer(1, 1, GL_UNSIGNED_BYTE, 5 * sizeof(uint8_t), (void*)(3 * sizeof(uint8_t)));
+    glEnableVertexAttribArray(1);
+    // face id
+    std::cout << "face" << "\n";
+    glVertexAttribIPointer(2, 1, GL_UNSIGNED_BYTE, 5 * sizeof(uint8_t), (void *)(4 * sizeof(uint8_t)));
+    glEnableVertexAttribArray(2);
+
+    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+    std::cout << "bind buffer\n";
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+    std::cout << "bind array\n";
+    glBindVertexArray(0);
+    
+    std::cout << "created\n";
+    // ran = true;
+}
+
+void Chunk::update()
+{
+    // build_voxels();
+    build_mesh();
+    create_vao(m_vao);
+}
+
+static size_t get_chunk_index(const WorldPosition& world_position)
+{
+    return world_position.x*WORLD_WIDTH + world_position.z;
+}

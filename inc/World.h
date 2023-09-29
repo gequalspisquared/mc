@@ -3,14 +3,16 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include <vector>
+#include <memory>
+#include <optional>
+
 #include "Chunk.h"
 #include "Shader.h"
 
-// size of world in chunks
-// can also be thought of as 'render distance'
-const unsigned int WORLD_WIDTH = 3;
-const unsigned int WORLD_DEPTH = WORLD_WIDTH;
-const unsigned int WORLD_AREA  = WORLD_DEPTH * WORLD_WIDTH;
+// Size of world in chunks
+const size_t WORLD_WIDTH  = 3; // can be thought of as render distance
+const size_t WORLD_HEIGHT = 1;
 
 class World
 {
@@ -20,10 +22,13 @@ public:
 
     void draw() const;
 
-    Shader chunk_shader = Shader(RESOURCES_PATH "shaders/chunk.vert", RESOURCES_PATH "shaders/chunk.frag");
+    std::shared_ptr<Chunk> get_chunk_from_world_position(const WorldPosition& chunk_world_position) const;
 
 private:
-    std::vector<Chunk> m_chunks;
+    std::vector<std::shared_ptr<Chunk>> m_chunks;
+    Shader m_chunk_shader = Shader(RESOURCES_PATH "shaders/chunk.vert", RESOURCES_PATH "shaders/chunk.frag");
+
+    std::optional<size_t> get_chunk_index_from_position(const WorldPosition& chunk_world_position) const;
 };
 
 #endif

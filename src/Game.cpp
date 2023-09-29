@@ -8,6 +8,7 @@
 #include <stb_image.h>
 
 #include "Game.h"
+#include "Shader.h" // for testing
 
 // static GLFWwindow* create
 static void initialize_callbacks(Game* game);
@@ -37,6 +38,8 @@ Game::~Game()
 
 int Game::run()
 {
+    std::cout << "running\n";
+    glEnable(GL_CULL_FACE);
     while (!m_window.should_close()) {
         float current_frame = (float)glfwGetTime();
         m_delta_time = current_frame - m_last_frame;
@@ -55,25 +58,25 @@ int Game::run()
     return 0;
 }
 
+
 void Game::draw() const
 {
     static const glm::mat4 proj = glm::perspective(glm::radians(90.0f), (float)m_window_width/(float)m_window_height, 0.1f, 100.0f);
     static const glm::mat4 model = glm::mat4(1.0f);
 
-    // static glm::mat4 view;
-    glm::mat4 view;
+    static glm::mat4 view;
     view = m_player.get_view_matrix();
 
     glClearColor(0.53f, 0.81f, 0.92f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_world.chunk_shader.use();
-    m_world.chunk_shader.set_mat4("view", view);
-    m_world.chunk_shader.set_mat4("projection", proj);
-    m_world.chunk_shader.set_mat4("model", model);
+    m_chunk_shader.use();
+    m_chunk_shader.set_mat4("view", view);
+    m_chunk_shader.set_mat4("projection", proj);
+    m_chunk_shader.set_mat4("model", model);
 
     glBindTexture(GL_TEXTURE_2D, m_texture_atlas);
-    m_world.draw();
+    m_chunk.draw(m_chunk_shader, 0, 0, 0);
 
     glBindVertexArray(0);
 
